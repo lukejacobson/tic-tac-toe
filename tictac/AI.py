@@ -42,9 +42,9 @@ def minimax_value(move,board,player):
                     (i,j), temp_board, next_player(player))
     
     if player == COMPUTER:
-        return max([(val,key) for (key,val) in possible_move_vals.items()])[0]
-    else:
         return min([(val,key) for (key,val) in possible_move_vals.items()])[0]
+    else:
+        return max([(val,key) for (key,val) in possible_move_vals.items()])[0]
 
 
 def next_player(player):
