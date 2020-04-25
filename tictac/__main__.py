@@ -1,5 +1,7 @@
 from tkinter import Tk, Canvas, Frame, BOTH, Button, Text
 from time import sleep
+from random import randint, seed, choice
+from numpy.random import binomial
 from AI import getNextMove, isWinState, isInt, isDrawState
 
 WIDTH = 600
@@ -24,7 +26,12 @@ YELLOW = "#FFFF00"
 PLAYER_1 = 'X'
 COMPUTER = 'O'
 
+FIRST_PLAYER = PLAYER_1
+
+DIFFICULTY = 1
+
 def draw_game():
+    seed()
     root = Tk()
     ex = Main(root)
     root.geometry(str(WIDTH)+"x"+str(HEIGHT))
@@ -47,6 +54,18 @@ class Main(Frame):
         self.message = "It's YOUR turn"
         self.winner = None
         self.AI_move = None
+
+        # computer goes first
+        if FIRST_PLAYER == COMPUTER:
+            # 50/50 chooses best move, a corner position:
+            decision = binomial(1, DIFFICULTY)
+            if decision:
+                self.AI_move = (choice([0,2]),choice([0,2]))
+                self.board[self.AI_move[0]][self.AI_move[1]] = COMPUTER
+            else:
+                self.AI_move = (randint(0,2),randint(0,2))
+                self.board[self.AI_move[0]][self.AI_move[1]] = COMPUTER
+
 
         draw_squares(self.canvas, self.board, self.message)
 
@@ -83,8 +102,12 @@ class Main(Frame):
 
                 # is the game is still going, calculate COMPUTER's response
                 if not self.winner and not board_full:
+                    decision = binomial(1, DIFFICULTY)
                     self.whos_turn = COMPUTER
-                    (a,b) = getNextMove(self.board, COMPUTER) 
+                    if decision:                   
+                        (a,b) = getNextMove(self.board, COMPUTER) 
+                    else:
+                        (a,b) = (randint(0,2),randint(0,2))
                     self.board[a][b] = self.whos_turn
                     self.winner = isWinState(self.board)
                     self.whos_turn = PLAYER_1
@@ -125,6 +148,18 @@ class Main(Frame):
         self.message = "It's YOUR turn!!"
         self.winner = None
         self.AI_move = None
+
+        # computer goes first
+        if FIRST_PLAYER == COMPUTER:
+            # chooses best move, a corner position:
+            decision = binomial(1, DIFFICULTY)
+            if decision:
+                self.AI_move = (choice([0,2]),choice([0,2]))
+                self.board[self.AI_move[0]][self.AI_move[1]] = COMPUTER
+            else:
+                self.AI_move = (randint(0,2),randint(0,2))
+                self.board[self.AI_move[0]][self.AI_move[1]] = COMPUTER
+
         draw_squares(self.canvas, self.board, self.message)
 
 

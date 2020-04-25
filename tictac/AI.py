@@ -3,8 +3,13 @@ from copy import deepcopy
 PLAYER_1 = 'X'
 COMPUTER = 'O' 
 
+INF = 2147483647
+
 # called when its COMPUTER's move
 def getNextMove(board, player):
+    # parameters for pruning
+    alpha = -INF
+    beta = INF
     # get all posible moves:
     move_value = {}
     for i,row in enumerate(board):
@@ -14,37 +19,68 @@ def getNextMove(board, player):
     
     # find minimax values for each move
     for key in move_value:
-        move_value[key] = minimax_value(key,board,COMPUTER)
+        move_value[key] = minimax_value(key,board,COMPUTER,alpha,beta)
+    
+    print("MINIMAX: ", move_value)
 
     reccomended_move = max([(val,key) for (key,val) in move_value.items()])[1]
     return reccomended_move
 
 # finds minimax value for the given move on the given board
-def minimax_value(move,board,player):
+def minimax_value(move,board,player,alpha,beta):
     temp_board = deepcopy(board)
+
+    # NOTE: player is the player who made the move to get to THIS board state.
 
     # apply move to board, and do terminal test
     temp_board[move[0]][move[1]] = player
-    #print_board(temp_board)
     utility = isEndState(temp_board)
-    #print("Utility", utility)
-    #print("Utility Bool", isInt(utility))
-    #print("Utility", utility)
+    
     if not (utility is False):
         return utility
-    #print("Utility", utility)
-    # now we expand game states
-    possible_move_vals = {}
-    for i,row in enumerate(temp_board):
-        for j,tile in enumerate(row):
-            if tile == ' ':
-                possible_move_vals[(i,j)] = minimax_value(
-                    (i,j), temp_board, next_player(player))
-    
+
     if player == COMPUTER:
-        return min([(val,key) for (key,val) in possible_move_vals.items()])[0]
+        # this is a MIN node, 
+        value = INF
+        for i,row in enumerate(temp_board):
+            for j,tile in enumerate(row):
+                if tile == ' ':
+                    value = min(value, minimax_value(
+                        (i,j), temp_board, next_player(player), alpha, beta))
+                    if value <= alpha:
+                        return value
+                    beta = min(value, beta)
+        return value
+    
     else:
-        return max([(val,key) for (key,val) in possible_move_vals.items()])[0]
+        # this is a MAX node, 
+        value = -INF
+        for i,row in enumerate(temp_board):
+            for j,tile in enumerate(row):
+                if tile == ' ':
+                    value = max(value, minimax_value(
+                        (i,j), temp_board, next_player(player), alpha, beta))
+                    if value >= beta:
+                        return value
+                    alpha = max(value, alpha)
+        return value
+        
+        
+
+    # # now we expand game states
+    # possible_move_vals = {}
+    # for i,row in enumerate(temp_board):
+    #     for j,tile in enumerate(row):
+    #         if tile == ' ':
+    #             v = minimax_value(
+    #                 (i,j), temp_board, next_player(player), alpha, beta)
+    #             possible_move_vals[(i,j)] = 
+    
+    # if player == COMPUTER:
+
+    #     return min([val for (key,val) in possible_move_vals.items()])
+    # else:
+    #     return max([val for (key,val) in possible_move_vals.items()])
 
 
 def next_player(player):
