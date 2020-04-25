@@ -89,7 +89,7 @@ class Main(Frame):
         if isInt(x) and isInt(y):
             # make sure square is empty
             if self.board[x][y] != ' ':
-                self.message = "Oops, you can't go here, silly!"
+                self.message = "Oops, you can't go here, IDIOT"
                 bg_colour = FIRE
             else:
                 self.board[x][y] = self.whos_turn

@@ -21,7 +21,7 @@ def getNextMove(board, player):
     for key in move_value:
         move_value[key] = minimax_value(key,board,COMPUTER,alpha,beta)
     
-    print("MINIMAX: ", move_value)
+    # print("MINIMAX: ", move_value)
 
     reccomended_move = max([(val,key) for (key,val) in move_value.items()])[1]
     return reccomended_move
